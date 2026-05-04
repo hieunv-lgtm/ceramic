@@ -2323,7 +2323,7 @@ const COLLECTION = [
     "filterKey": "Tượng",
     "material": "Gốm",
     "size": "40*10 cm",
-    "period": "15/5/197",
+    "period": "15/5/1997",
     "origin": "TRƯỜNG CAO ĐẲNG MỸ THUẬT TRANG TRÍ ĐỒNG NAI",
     "img": "images/collection/0194.jpeg"
   },
