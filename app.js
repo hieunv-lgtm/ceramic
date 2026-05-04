@@ -2,9 +2,10 @@
 // GỐM BIÊN HÒA — PHÒNG TRƯNG BÀY NGHỆ THUẬT
 // ══════════════════════════════════════════════
 
-const API_KEY = 'AIzaSyDZ0Gh5qkZeQKGw5Td34ALJwplDmQ6RN5I';
-const API_MODELS = ['gemini-2.5-flash','gemini-2.5-flash-lite','gemini-2.0-flash-lite'];
-function makeUrl(m){ return `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${API_KEY}`; }
+// API_KEY được load từ config.js (file riêng, không push lên GitHub)
+// Xem config.example.js để biết cách thiết lập
+const API_MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash-lite'];
+function makeUrl(m) { return `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${API_KEY}`; }
 
 // ── STATE ──
 let currentFilter = 'all';
@@ -53,17 +54,17 @@ function render(list, page) {
   const g = document.getElementById('gallery');
   const e = document.getElementById('emptyState');
   const stats = document.getElementById('collectionStats');
-  
+
   const totalItems = list.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
   if (page > totalPages) page = totalPages;
   if (page < 1) page = 1;
   currentPage = page;
-  
+
   const start = (page - 1) * ITEMS_PER_PAGE;
   const end = Math.min(start + ITEMS_PER_PAGE, totalItems);
   const pageItems = list.slice(start, end);
-  
+
   document.getElementById('navCount').textContent = totalItems;
   stats.textContent = `Hiển thị ${start + 1}–${end} / ${totalItems} hiện vật`;
 
@@ -87,7 +88,7 @@ function render(list, page) {
       </div>
     </div>
   `).join('');
-  
+
   renderPagination(totalPages, page);
 }
 
@@ -95,35 +96,35 @@ function render(list, page) {
 function renderPagination(totalPages, current) {
   const pg = document.getElementById('pagination');
   if (totalPages <= 1) { pg.innerHTML = ''; return; }
-  
+
   let html = '';
-  
+
   // Previous
   html += `<button class="pg-btn ${current <= 1 ? 'disabled' : ''}" onclick="goPage(${current - 1})" ${current <= 1 ? 'disabled' : ''}>‹</button>`;
-  
+
   // Page numbers
   const maxVisible = 7;
   let startP = Math.max(1, current - Math.floor(maxVisible / 2));
   let endP = Math.min(totalPages, startP + maxVisible - 1);
   if (endP - startP < maxVisible - 1) startP = Math.max(1, endP - maxVisible + 1);
-  
+
   if (startP > 1) {
     html += `<button class="pg-btn" onclick="goPage(1)">1</button>`;
     if (startP > 2) html += `<span class="pg-dots">…</span>`;
   }
-  
+
   for (let i = startP; i <= endP; i++) {
     html += `<button class="pg-btn ${i === current ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
   }
-  
+
   if (endP < totalPages) {
     if (endP < totalPages - 1) html += `<span class="pg-dots">…</span>`;
     html += `<button class="pg-btn" onclick="goPage(${totalPages})">${totalPages}</button>`;
   }
-  
+
   // Next
   html += `<button class="pg-btn ${current >= totalPages ? 'disabled' : ''}" onclick="goPage(${current + 1})" ${current >= totalPages ? 'disabled' : ''}>›</button>`;
-  
+
   pg.innerHTML = html;
 }
 
@@ -200,7 +201,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ── SWIPE GESTURES (mobile) ──
-(function() {
+(function () {
   let touchStartX = 0, touchStartY = 0, touchEndX = 0, touchEndY = 0;
   const lb = document.getElementById('lightbox');
 
@@ -293,9 +294,13 @@ const SYS_PROMPT = `Bạn là giám tuyển cao cấp của phòng trưng bày "
 
 ## QUY TẮC TRẢ LỜI
 - Trả lời bằng tiếng Việt, văn phong lịch lãm, uyên bác như một giám tuyển bảo tàng chuyên nghiệp.
-- Trả lời ĐẦY ĐỦ, CHI TIẾT, CHÍNH XÁC. Mỗi câu trả lời tối thiểu 200 từ.
-- Khi nói về kỹ thuật, men, lịch sử — trích dẫn chi tiết cụ thể.
-- Nếu câu hỏi liên quan đến hiện vật trong bộ sưu tập, gợi ý Mã BT phù hợp cuối câu: [IDs:1,3]
+- Trả lời ĐẦY ĐỦ, CHI TIẾT, CHÍNH XÁC, NHIỀU Ý. Mỗi câu trả lời tối thiểu 400 từ.
+- Chia câu trả lời thành NHIỀU PHẦN rõ ràng với tiêu đề (dùng **in đậm**). Ví dụ: **Lịch sử**, **Kỹ thuật**, **Đặc điểm nổi bật**, **Giá trị nghệ thuật**, **Hiện vật tiêu biểu**.
+- Sử dụng danh sách gạch đầu dòng khi liệt kê nhiều ý.
+- Khi nói về kỹ thuật, men, lịch sử — trích dẫn chi tiết cụ thể với năm, tên người, địa điểm.
+- Luôn mở rộng câu trả lời bằng cách: so sánh, phân tích, đưa ra bối cảnh lịch sử, kể giai thoại thú vị, và liên hệ với các hiện vật cụ thể trong bộ sưu tập.
+- Nếu câu hỏi liên quan đến hiện vật trong bộ sưu tập, liệt kê NHIỀU hiện vật phù hợp (tối đa 5-8) kèm mô tả ngắn, và gợi ý Mã BT cuối câu: [IDs:1,3,5,7]
+- Cuối mỗi câu trả lời, gợi ý 1-2 câu hỏi liên quan để người đọc khám phá thêm.
 - KHÔNG bịa thông tin. Nếu không chắc chắn, nói rõ giới hạn kiến thức.
 - Bộ sưu tập hiện có 268 hiện vật số hóa.
 
@@ -325,7 +330,7 @@ async function sendChat() {
     const reqBody = JSON.stringify({
       system_instruction: { parts: [{ text: SYS_PROMPT }] },
       contents: chatHistory,
-      generationConfig: { maxOutputTokens: 2048, temperature: 0.7 }
+      generationConfig: { maxOutputTokens: 4096, temperature: 0.7 }
     });
 
     let data = null;
